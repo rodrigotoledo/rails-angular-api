@@ -1,0 +1,31 @@
+#  Template Ruby build
+
+#  This template allows you to validate your Ruby code.
+#  The workflow allows running tests and code linting on the default branch.
+
+image: ruby:2.7
+
+pipelines:
+  default:
+    - step:
+        name: Review with test
+        script:
+          - export DATABASE_URL=postgresql://test_user:test_user_password@localhost/pipelines
+          - apt-get update && apt-get install -y nodejs
+          - cp config/database.yml.pipeline config/database.yml
+          - bundle install
+          - bundle exec rails db:setup
+          - bundle exec rails db:test:prepare
+          - bundle exec rspec
+        services:
+          - database
+definitions:
+  services:
+    database:
+      image: postgres:9.5
+      environment:
+        POSTGRES_DB: pipelines
+        POSTGRES_USER: test_user
+        POSTGRES_PASSWORD: test_user_password
+  caches:
+    bundler: ./
