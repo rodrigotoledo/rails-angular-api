@@ -1,8 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
-  # subject { described_class.new }
-
   context "invalid" do
     before do
       subject.valid?
@@ -19,7 +17,7 @@ RSpec.describe User, type: :model do
     it { is_expected.to validate_confirmation_of(:password) }
 
     context "uniq user" do
-      let!(:email) { 'some-user@email.com' }
+      let(:email) { 'some-user@email.com' }
       before do
         create(:user, email: email)
         subject.attributes = attributes_for(:user, email: email)
