@@ -4,7 +4,7 @@ class Api::TasksController < ApplicationController
   before_action :set_task, only: [:show, :update, :destroy]
 
   def index
-    render json: current_user.tasks.to_json(include: [:user]), status: :ok
+    render json: current_user.tasks.ransack(params[:q]).result.to_json(include: [:user]), status: :ok
   end
 
   def show
