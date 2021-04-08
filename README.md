@@ -29,3 +29,14 @@ As explained, the application run with `docker-compose` so execute the command a
 
 if you want interact in console run
 - `docker-compose run app bundle exec rails c`
+
+# Development
+
+This project uses git flow workflow so each developer should follow the steps to build or fix something
+
+To start new feature
+- `git flow feature start name-of-feature`
+
+code, commit and the feature
+- `git commit -am 'name-of-feature fixed with short text'`
+- `git flow feature finish name-of-feature`
