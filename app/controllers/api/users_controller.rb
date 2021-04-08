@@ -3,14 +3,14 @@ class Api::UsersController < ApplicationController
   before_action :auth_with_token!, only: [:update, :destroy]
   before_action :set_user, only: :show
   def show
-    respond_with @user
+    render json: current_user.to_json(include: [:tasks]), status: :ok
   end
 
   def update
     if current_user.update(user_params)
-      render json: current_user, status: 200
+      render json: current_user.to_json(include: [:tasks]), status: :ok
     else
-      render json: {errors: current_user.errors}, status: 422
+      render json: {errors: current_user.errors}, status: :unprocessable_entity
     end
   end
 
@@ -22,9 +22,9 @@ class Api::UsersController < ApplicationController
   def create
     user = User.new(user_params)
     if user.save
-      render json: user, status: 201
+      render json: user, status: :created
     else
-      render json: {errors: user.errors}, status: 422
+      render json: {errors: user.errors}, status: :unprocessable_entity
     end
   end
 
