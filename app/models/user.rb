@@ -8,6 +8,8 @@ class User < ApplicationRecord
 
   before_create :generate_auth_token!
 
+  has_many :tasks, dependent: :destroy
+
   def generate_auth_token!
     begin
       self.auth_token = Devise.friendly_token

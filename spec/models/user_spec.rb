@@ -37,6 +37,7 @@ RSpec.describe User, type: :model do
       subject.attributes = attributes_for(:user)
      end
      it { is_expected.to be_valid }
+     it { is_expected.to have_many(:tasks).dependent(:destroy) }
      it { is_expected.to allow_value('email@email.com').for(:email) }
      it { is_expected.to validate_uniqueness_of(:auth_token) }
    end
