@@ -16,22 +16,43 @@ RSpec.describe Api::TasksController, type: :request do
     describe "get tasks" do
       before do
         create_list(:task, 5, user_id: user.id)
-
-        get api_tasks_path, headers: headers
       end
 
-      it "renders a successful response" do
-        expect(response).to be_successful
+      context "when have filters" do
+        before do
+          create(:task, title: 'Code and study', user_id: user.id)
+          get api_tasks_path, params: {q: {title_cont: 'de and stud'}}, headers: headers
+        end
+
+        it "renders a successful response" do
+          expect(response).to be_successful
+        end
+
+        it "get task with filter" do
+          expect(json_response).to have(1).items
+        end
       end
 
-      it "get tasks list" do
-        expect(json_response).to have(5).items
+      context "when havent filters" do
+        before do
+          get api_tasks_path, headers: headers
+        end
+
+        it "renders a successful response" do
+          expect(response).to be_successful
+        end
+
+        it "get tasks list" do
+          expect(json_response).to have(5).items
+        end
+
+        it "get task with user info" do
+          expect(json_response.first).to have_key(:user)
+        end
       end
 
 
-      it "get task with user info" do
-        expect(json_response.first).to have_key(:user)
-      end
+
     end
 
     describe "get task info" do
