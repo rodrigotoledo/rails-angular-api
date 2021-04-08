@@ -1,0 +1,2 @@
+User.create(email: 'rodrigo@rtoledo.inf.br', password: '123456', password_confirmation: '123456', name: 'RToledo Info')
+User.create(email: 'user@email.com', password: '123456', password_confirmation: '123456', name: 'Common User')
