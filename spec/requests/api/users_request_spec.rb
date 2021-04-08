@@ -3,10 +3,15 @@ require 'rails_helper'
 RSpec.describe Api::UsersController, type: :request do
   let!(:user) { create(:user) }
   let(:user_id) { user.id }
+  let(:headers) do
+    {
+      'Authorization' => user.auth_token
+    }
+  end
 
   describe "get user info" do
     before do
-      get api_user_path(user_id)
+      get api_user_path(user_id), params: {}, headers: headers
     end
 
     context "when get user info" do
@@ -62,7 +67,7 @@ RSpec.describe Api::UsersController, type: :request do
     let(:user_params) { attributes_for(:custom_user) }
 
     before do
-      put api_user_path(user_id), params: { user: user_params }
+      put api_user_path(user_id), params: { user: user_params }, headers: headers
     end
 
     context "when update user info" do
@@ -90,7 +95,7 @@ RSpec.describe Api::UsersController, type: :request do
 
   describe "remove user" do
     before do
-      delete api_user_path(user_id)
+      delete api_user_path(user_id), params: {}, headers: headers
     end
 
     context "when destroy user" do
