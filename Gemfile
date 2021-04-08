@@ -32,7 +32,6 @@ group :development, :test do
   gem 'rspec-rails', '~> 4.0.1'
   gem 'rubocop', '~> 1.11', require: false
   gem 'simplecov'
-  gem 'sqlite3', '~> 1.4'
   gem 'database_cleaner-active_record'
 
   gem 'faker', '~> 2.14'
@@ -54,7 +53,5 @@ end
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
-group :production do
-  gem 'pg'
-end
 gem "devise", "~> 4.7"
+gem 'pg'

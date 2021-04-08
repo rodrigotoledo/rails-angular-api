@@ -1,16 +1,19 @@
 default: &default
-  adapter: sqlite3
-  timeout: 5000
+  adapter: postgresql
+  encoding: unicode
+  host: db
+  username: postgres
+  password: password
   pool: 5
 
 development:
   <<: *default
-  database: db/development.sqlite3
-  pool: 5
+  database: task_manager_api_development
+
 
 test:
   <<: *default
-  database: db/test.sqlite3
+  database: task_manager_api_test
 
 production:
   url: <%= ENV['DATABASE_URL'] %>
