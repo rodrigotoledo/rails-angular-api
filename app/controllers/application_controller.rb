@@ -1,3 +1,6 @@
 class ApplicationController < ActionController::API
-  include Authenticable
+  include DeviseTokenAuth::Concerns::SetUserByToken
+  include DeviseSanitizer
+
+  before_action :configure_permitted_parameters, if: :devise_controller?
 end

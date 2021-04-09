@@ -25,6 +25,7 @@ module TaskManager
     config.load_defaults 6.1
     config.time_zone = 'Brasilia'
     config.active_record.default_timezone = :local
+    config.i18n.default_locale = :'pt-BR'
 
     config.api_only = true
   end

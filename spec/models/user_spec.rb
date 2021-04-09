@@ -27,9 +27,8 @@ RSpec.describe User, type: :model do
 
       it { expect(subject.errors.count).to eql(1) }
       it { is_expected.to have(1).errors_on(:email) }
-      it { is_expected.to validate_uniqueness_of(:email).case_insensitive }
+      it { is_expected.to validate_uniqueness_of(:email).scoped_to(:provider).case_insensitive }
     end
-
   end
 
    context "validations" do
