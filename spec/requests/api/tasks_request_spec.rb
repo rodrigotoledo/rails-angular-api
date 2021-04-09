@@ -2,9 +2,12 @@ require 'rails_helper'
 
 RSpec.describe Api::TasksController, type: :request do
   let!(:user) { create(:user) }
+  let(:auth_data) { user.create_new_auth_token }
   let(:headers) do
     {
-      'Authorization' => user.auth_token
+      'access-token' => auth_data['access-token'],
+      'uid' => auth_data['uid'],
+      'client' => auth_data['client']
     }
   end
 
@@ -38,7 +41,7 @@ RSpec.describe Api::TasksController, type: :request do
           get api_tasks_path, headers: headers
         end
 
-        it "renders a successful response" do
+        it "returns success response" do
           expect(response).to be_successful
         end
 

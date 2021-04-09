@@ -1,28 +1,25 @@
 require 'rails_helper'
 
-RSpec.describe Api::UsersController, type: :request do
+RSpec.describe 'Users Api Requests', type: :request do
   let!(:user) { create(:user) }
   let(:user_id) { user.id }
+  let(:auth_data) { user.create_new_auth_token }
   let(:headers) do
     {
-      'Authorization' => user.auth_token
+      'access-token' => auth_data['access-token'],
+      'uid' => auth_data['uid'],
+      'client' => auth_data['client']
     }
   end
 
   describe "get user info" do
     before do
-      create_list(:task, 5, user_id: user.id)
-      get api_user_path(user_id), headers: headers
+      get api_auth_validate_token_path, headers: headers
     end
 
     context "when get user info" do
       it "returns user info" do
-        expect(json_response[:id]).to eql(user_id)
-      end
-
-      it "returns tasks info" do
-        expect(json_response).to have_key(:tasks)
-        expect(json_response[:tasks]).to have(5).items
+        expect(json_response[:data][:id]).to eql(user_id)
       end
 
       it "returns success response" do
@@ -31,24 +28,27 @@ RSpec.describe Api::UsersController, type: :request do
     end
 
     context "when fail to get user info" do
-      let(:user_id) { -1 }
+      before do
+        headers['access-token'] = 'invalid'
+        get api_auth_validate_token_path, headers: headers
+      end
 
-      it "returns not found response" do
-        expect(response).to be_not_found
+      it "returns unauthorized" do
+        expect(response).to have_http_status(401)
       end
     end
   end
 
   describe "create user" do
     before do
-      post api_users_path, params: { user: user_params }
+      post api_user_registration_path, params: user_params, headers: headers
     end
 
     context "when have valid params" do
       let(:user_params) { attributes_for(:custom_user) }
 
       it "returns user created info" do
-        expect(json_response[:email]).to eql(user_params[:email])
+        expect(json_response[:data][:email]).to eql(user_params[:email])
       end
 
       it "returns success response" do
@@ -73,22 +73,16 @@ RSpec.describe Api::UsersController, type: :request do
     let(:user_params) { attributes_for(:custom_user) }
 
     before do
-      create_list(:task, 2, user_id: user.id)
-      put api_user_path(user_id), params: { user: user_params }, headers: headers
+      put api_user_registration_path, params: user_params, headers: headers
     end
 
     context "when update user info" do
       it "returns user info with new info" do
-        expect(json_response[:email]).to eql(user_params[:email])
+        expect(json_response[:data][:email]).to eql(user_params[:email])
       end
 
       it "returns a successful response" do
         expect(response).to be_successful
-      end
-
-      it "returns tasks info" do
-        expect(json_response).to have_key(:tasks)
-        expect(json_response[:tasks]).to have(2).items
       end
     end
 
@@ -107,7 +101,7 @@ RSpec.describe Api::UsersController, type: :request do
 
   describe "remove user" do
     before do
-      delete api_user_path(user_id), headers: headers
+      delete api_user_registration_path, headers: headers
     end
 
     it "returns entity destroyed response" do

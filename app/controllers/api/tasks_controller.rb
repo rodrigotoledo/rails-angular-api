@@ -1,6 +1,6 @@
 class Api::TasksController < ApplicationController
   respond_to :json
-  before_action :auth_with_token!
+  before_action :authenticate_user!
   before_action :set_task, only: [:show, :update, :destroy]
 
   def index

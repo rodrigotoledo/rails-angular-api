@@ -1,55 +1,59 @@
 require 'rails_helper'
 
-RSpec.describe "Api::Sessions", type: :request do
-  let(:user) { create(:user) }
+RSpec.describe 'Sessions Api Requests', type: :request do
+  let!(:user) { create(:user) }
+  let(:auth_data) { user.create_new_auth_token }
+  let(:credentials) { { email: user.email, password: '123456' }  }
+  let(:headers) do
+    {
+      'access-token' => auth_data['access-token'],
+      'uid' => auth_data['uid'],
+      'client' => auth_data['client']
+    }
+  end
 
-  describe "create session" do
+  describe "#sign_in" do
     before do
-      post api_sessions_path, params: { session: credentials }
+      post api_user_session_path, params: credentials, headers: headers
     end
 
-    context "valid credentials and auth" do
-      let(:credentials) { { email: user.email, password: '123456' } }
-
-      it "returns user auth token" do
-        user.reload
-        expect(json_response[:auth_token]).to eql(user.auth_token)
+    context "credentials are valid" do
+      it "returns success response" do
+        expect(response).to be_successful
       end
 
-      it "returns status 200" do
-        expect(response).to have_http_status(200)
+      it "returns auth token info response" do
+        expect(response.headers).to have_key('access-token')
+        expect(response.headers).to have_key('uid')
+        expect(response.headers).to have_key('client')
       end
     end
 
-    context "invalid credentials" do
-      let(:credentials) { { email: user.email, password: 'invalid' } }
+    context "credentials are invalid" do
+      let(:credentials) { { email: user.email, password: 'never-will-correct' } }
 
-      it "returns user auth token" do
-        expect(json_response).to have_key(:errors)
-      end
-
-      it "returns status 401" do
+      it "returns unauthorized" do
         expect(response).to have_http_status(401)
       end
+
+      it "returns auth token info response" do
+        expect(json_response).to have_key(:errors)
+      end
     end
   end
 
-  describe "destroy session" do
-    let(:auth_token) { user.auth_token }
-
+  describe "#sign_out" do
     before do
-      delete api_session_path(auth_token)
+      delete destroy_api_user_session_path, headers: headers
     end
 
-    it "return status 204" do
-      expect(response).to have_http_status(204)
+    it "returns success response" do
+      expect(response).to be_successful
     end
 
-    it "change user auth token" do
-      expect(User.find_by(auth_token: auth_token)).to be_nil
+    it "changes the auth token" do
+      user.reload
+      expect(user).not_to be_valid_token(auth_data['access-token'], auth_data['client'])
     end
-
-
   end
-
 end
